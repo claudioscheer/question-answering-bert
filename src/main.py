@@ -9,12 +9,12 @@ import os
 from lib import CustomDataLoader, Encoder, Decoder, SequenceToSequence
 
 
-SEED = 1234
-random.seed(SEED)
-np.random.seed(SEED)
-torch.manual_seed(SEED)
-torch.cuda.manual_seed(SEED)
-torch.backends.cudnn.deterministic = True
+# SEED = 1234
+# random.seed(SEED)
+# np.random.seed(SEED)
+# torch.manual_seed(SEED)
+# torch.cuda.manual_seed(SEED)
+# torch.backends.cudnn.deterministic = True
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -24,21 +24,21 @@ dataset = CustomDataLoader(
 )
 
 # Define hyperparameters.
-number_words = dataset.number_words
+number_tokens = dataset.number_tokens
 embedding_dim = 128
 hidden_size_rnn = 512
 number_layers_rnn = 2
 dropout = 0.5
 
 encoder = Encoder(
-    number_words, embedding_dim, hidden_size_rnn, number_layers_rnn, dropout
+    number_tokens, embedding_dim, hidden_size_rnn, number_layers_rnn, dropout
 )
 decoder = Decoder(
-    number_words,
+    number_tokens,
     embedding_dim,
     hidden_size_rnn,
     number_layers_rnn,
-    number_words,
+    number_tokens,
     dropout,
 )
 
@@ -63,7 +63,7 @@ print(f"The model has {count_model_parameters(model):,} trainable parameters.")
 
 optimizer = optim.Adam(model.parameters(), lr=0.001)
 criterion = nn.CrossEntropyLoss(
-    ignore_index=dataset.word2index[dataset.pad_sentence_token]
+    ignore_index=dataset.word2token[dataset.pad_sentence_token]
 )
 
 
@@ -141,14 +141,14 @@ for epoch in range(N_EPOCHS):
 
 def predict(model, dataset, sentence):
     tokens = dataset.get_encoded_sentence(sentence)
-    tokens.insert(0, dataset.word2index[dataset.start_sentence_token])
-    tokens.insert(0, dataset.word2index[dataset.start_sentence_token])
+    tokens.insert(0, dataset.word2token[dataset.start_sentence_token])
+    tokens.insert(0, dataset.word2token[dataset.start_sentence_token])
 
-    tokens.append(dataset.word2index[dataset.end_sentence_token])
-    tokens.append(dataset.word2index[dataset.end_sentence_token])
+    tokens.append(dataset.word2token[dataset.end_sentence_token])
+    tokens.append(dataset.word2token[dataset.end_sentence_token])
 
     tokens = torch.tensor([tokens]).transpose(0, 1).to(device)
-    y = torch.tensor([dataset.word2index[dataset.start_sentence_token]]).to(device)
+    y = torch.tensor([dataset.word2token[dataset.start_sentence_token]]).to(device)
 
     model.eval()
 
@@ -156,7 +156,7 @@ def predict(model, dataset, sentence):
         answer = ""
         last_index = -1
         hidden_states = model.encoder(tokens)
-        while last_index != dataset.word2index[dataset.end_sentence_token]:
+        while last_index != dataset.word2token[dataset.end_sentence_token]:
             output, hidden_states = model.decoder(y, hidden_states)
             top1 = output.argmax(1)
             top1_index = top1.cpu().numpy()[0]
@@ -164,9 +164,9 @@ def predict(model, dataset, sentence):
             last_index = top1_index
             y = torch.tensor([last_index]).to(device)
 
-            answer += dataset.index2word[last_index] + " "
+            answer += dataset.index2token[last_index] + " "
         return answer
 
 
-answer = predict(model, dataset, "How are you?")
+answer = predict(model, dataset, "Qual é a fiabilidade da informação que disponibilizam?")
 print(answer)

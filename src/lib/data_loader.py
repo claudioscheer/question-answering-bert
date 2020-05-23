@@ -1,14 +1,11 @@
 import os
 import pandas as pd
 import numpy as np
-import torch
 from nltk.tokenize import word_tokenize
 
 
 class CustomDataLoader:
     def __init__(self, csv_path, split_percentages=[0.7, 0.15, 0.15]):
-        super(CustomDataLoader, self).__init__()
-
         assert sum(split_percentages) == 1, "The sum of `split_percentages` must be 1."
         assert os.path.exists(csv_path), "The argument `csv_path` is invalid."
 
@@ -38,18 +35,18 @@ class CustomDataLoader:
         self.end_sentence_token = "<EOF>"  # end of sentence
         self.pad_sentence_token = "<PAD>"  # sentence pad
 
-        self.word2index = {
+        self.word2token = {
             self.start_sentence_token: 0,
             self.end_sentence_token: 1,
             self.pad_sentence_token: 2,
         }
-        self.index2word = {
+        self.index2token = {
             0: self.start_sentence_token,
             1: self.end_sentence_token,
             2: self.pad_sentence_token,
         }
-        self.word_count = {}
-        self.number_words = 3
+        self.token_count = {}
+        self.number_tokens = 3
 
         # Create the dictionary of words and indexes.
         for x in range(len(self)):
@@ -64,22 +61,22 @@ class CustomDataLoader:
         return word_tokenize(sentence)
 
     def add_sentence(self, sentence):
-        for word in self.tokenize_sentence(sentence):
-            self.add_word(word)
+        for token in self.tokenize_sentence(sentence):
+            self.add_token(token)
 
-    def add_word(self, word):
-        if word not in self.word2index:
-            self.word2index[word] = self.number_words
-            self.index2word[self.number_words] = word
-            self.word_count[word] = 1
-            self.number_words += 1
+    def add_token(self, token):
+        if token not in self.word2token:
+            self.word2token[token] = self.number_tokens
+            self.index2token[self.number_tokens] = token
+            self.token_count[token] = 1
+            self.number_tokens += 1
         else:
-            self.word_count[word] += 1
+            self.token_count[token] += 1
 
     def get_encoded_sentence(self, sentence, reverse=False):
         encoded = []
         for word in self.tokenize_sentence(sentence):
-            encoded.append(self.word2index[word])
+            encoded.append(self.word2token[word])
         if reverse:
             # Based on https://arxiv.org/abs/1409.3215.
             encoded = encoded[::-1]
@@ -93,15 +90,15 @@ class CustomDataLoader:
         for i in range(len(x)):
             # Append pad token.
             for _ in range(longer_x - len(x[i])):
-                x[i].append(self.word2index[self.pad_sentence_token])
+                x[i].append(self.word2token[self.pad_sentence_token])
             for _ in range(longer_y - len(y[i])):
-                y[i].append(self.word2index[self.pad_sentence_token])
+                y[i].append(self.word2token[self.pad_sentence_token])
             # Insert SOS token.
-            x[i].insert(0, self.word2index[self.start_sentence_token])
-            y[i].insert(0, self.word2index[self.start_sentence_token])
+            x[i].insert(0, self.word2token[self.start_sentence_token])
+            y[i].insert(0, self.word2token[self.start_sentence_token])
             # Append EOF token.
-            x[i].append(self.word2index[self.end_sentence_token])
-            y[i].append(self.word2index[self.end_sentence_token])
+            x[i].append(self.word2token[self.end_sentence_token])
+            y[i].append(self.word2token[self.end_sentence_token])
         return x, y
 
     def get_data_indices(self, data_type):

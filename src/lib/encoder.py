@@ -5,7 +5,7 @@ import torch.nn as nn
 class Encoder(nn.Module):
     def __init__(
         self,
-        number_words,
+        number_tokens,
         embedding_dim,
         hidden_size_rnn,
         number_layers_rnn,
@@ -13,12 +13,12 @@ class Encoder(nn.Module):
     ):
         super(Encoder, self).__init__()
 
-        self.number_words = number_words
+        self.number_tokens = number_tokens
         self.embedding_dim = embedding_dim
         self.hidden_size_rnn = hidden_size_rnn
         self.number_layers_rnn = number_layers_rnn
 
-        self.embedding = nn.Embedding(number_words, embedding_dim)
+        self.embedding = nn.Embedding(number_tokens, embedding_dim)
         self.dropout = nn.Dropout(dropout)
         self.lstm = nn.LSTM(
             embedding_dim, hidden_size_rnn, number_layers_rnn, dropout=dropout
