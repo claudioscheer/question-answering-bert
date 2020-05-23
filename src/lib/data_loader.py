@@ -1,18 +1,43 @@
 import os
 import pandas as pd
+import numpy as np
 import torch
 from nltk.tokenize import word_tokenize
 
 
 class CustomDataLoader:
-    def __init__(self, csv_path, validation_split=0.3):
+    def __init__(self, csv_path, split_percentages=[0.7, 0.15, 0.15]):
         super(CustomDataLoader, self).__init__()
+
+        assert sum(split_percentages) == 1, "The sum of `split_percentages` must be 1."
+        assert os.path.exists(csv_path), "The argument `csv_path` is invalid."
+
+        self.dataset = pd.read_csv(csv_path, header=0)
+
+        # Split dataset into training, validation and testing.
+        csv_indexes = list(range(len(self)))
+        np.random.shuffle(csv_indexes)
+        validation_count = int(len(csv_indexes) * split_percentages[1])
+        testing_count = int(len(csv_indexes) * split_percentages[2])
+
+        self.validation_indexes = csv_indexes[:validation_count]
+        self.testing_indexes = csv_indexes[
+            validation_count : validation_count + testing_count
+        ]
+        self.training_indexes = csv_indexes[validation_count + testing_count :]
+
+        assert sum(
+            [
+                len(self.validation_indexes),
+                len(self.testing_indexes),
+                len(self.training_indexes),
+            ]
+        ) == len(csv_indexes), "An error occured while splitting the dataset."
 
         self.start_sentence_token = "<SOS>"  # start of sentence
         self.end_sentence_token = "<EOF>"  # end of sentence
-        self.pad_sentence_token = "<PAD>"  # end of sentence
+        self.pad_sentence_token = "<PAD>"  # sentence pad
 
-        self.csv = pd.read_csv(csv_path, header=0)
         self.word2index = {
             self.start_sentence_token: 0,
             self.end_sentence_token: 1,
@@ -26,19 +51,14 @@ class CustomDataLoader:
         self.word_count = {}
         self.number_words = 3
 
-        csv_indexes = list(range(len(self)))
-        split_dataset_index = int(len(csv_indexes) * validation_split)
-        self.validation_indexes = csv_indexes[:split_dataset_index]
-        self.train_indexes = csv_indexes[split_dataset_index:]
-
         # Create the dictionary of words and indexes.
         for x in range(len(self)):
-            row = self.csv.iloc[x]
+            row = self.dataset.iloc[x]
             self.add_sentence(row["question"])
             self.add_sentence(row["answer"])
 
     def __len__(self):
-        return len(self.csv)
+        return len(self.dataset)
 
     def tokenize_sentence(self, sentence):
         return word_tokenize(sentence)
@@ -61,10 +81,13 @@ class CustomDataLoader:
         for word in self.tokenize_sentence(sentence):
             encoded.append(self.word2index[word])
         if reverse:
+            # Based on https://arxiv.org/abs/1409.3215.
             encoded = encoded[::-1]
         return encoded
 
     def pad_batch_sequence(self, x, y):
+        assert len(x) == len(y), "`x` and `y` must be the same length."
+
         longer_x = len(max(x, key=len))
         longer_y = len(max(y, key=len))
         for i in range(len(x)):
@@ -81,15 +104,33 @@ class CustomDataLoader:
             y[i].append(self.word2index[self.end_sentence_token])
         return x, y
 
-    def get_batches(self, batch_size, drop_last=False, validation=False):
-        indexes = self.validation_indexes if validation else self.train_indexes
+    def get_data_indices(self, data_type):
+        """
+            data_type: 0 for training data; 1 for validation data; 2 for testing data.
+        """
+        if data_type == 0:
+            return self.training_indexes
+        elif data_type == 1:
+            return self.validation_indexes
+        elif data_type == 2:
+            return self.testing_indexes
+        else:
+            raise Exception("Invalid `data_type`.")
+
+    def get_batches(self, batch_size, data_type, drop_last=False):
+        """
+            batch_size: The batch size used as input in the model.
+            data_type: 0 for training data; 1 for validation data; 2 for testing data.
+            drop_last: When True, the last batch may not be the same size as `batch_size`.
+        """
+        indexes = self.get_data_indices(data_type)
         batch_index = -1
         count = 0
         while count < len(indexes) and batch_size <= len(indexes):
             x = []
             y = []
             for i in range(batch_size):
-                row = self.csv.iloc[indexes[i + count]]
+                row = self.dataset.iloc[indexes[i + count]]
                 x.append(self.get_encoded_sentence(row["question"]))
                 y.append(self.get_encoded_sentence(row["answer"]))
             batch_index += 1
@@ -102,17 +143,8 @@ class CustomDataLoader:
             x = []
             y = []
             for i in range(len(indexes) - count):
-                row = self.csv.iloc[indexes[i + count]]
+                row = self.dataset.iloc[indexes[i + count]]
                 x.append(self.get_encoded_sentence(row["question"]))
                 y.append(self.get_encoded_sentence(row["answer"]))
             batch_index += 1
             yield batch_index, self.pad_batch_sequence(x, y)
-
-
-if __name__ == "__main__":
-    current_file_path = os.path.dirname(os.path.abspath(__file__))
-    dataset = CustomDataLoader(
-        os.path.join(current_file_path, "../../dataset/supervised.csv")
-    )
-    for x, y in dataset.get_batches(3):
-        print(x, y)
