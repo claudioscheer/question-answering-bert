@@ -35,7 +35,7 @@ class CustomDataLoader:
         self.end_sentence_token = "<EOF>"  # end of sentence
         self.pad_sentence_token = "<PAD>"  # sentence pad
 
-        self.word2token = {
+        self.token2index = {
             self.start_sentence_token: 0,
             self.end_sentence_token: 1,
             self.pad_sentence_token: 2,
@@ -65,8 +65,8 @@ class CustomDataLoader:
             self.add_token(token)
 
     def add_token(self, token):
-        if token not in self.word2token:
-            self.word2token[token] = self.number_tokens
+        if token not in self.token2index:
+            self.token2index[token] = self.number_tokens
             self.index2token[self.number_tokens] = token
             self.token_count[token] = 1
             self.number_tokens += 1
@@ -75,8 +75,8 @@ class CustomDataLoader:
 
     def get_encoded_sentence(self, sentence, reverse=False):
         encoded = []
-        for word in self.tokenize_sentence(sentence):
-            encoded.append(self.word2token[word])
+        for token in self.tokenize_sentence(sentence):
+            encoded.append(self.token2index[token])
         if reverse:
             # Based on https://arxiv.org/abs/1409.3215.
             encoded = encoded[::-1]
@@ -90,15 +90,15 @@ class CustomDataLoader:
         for i in range(len(x)):
             # Append pad token.
             for _ in range(longer_x - len(x[i])):
-                x[i].append(self.word2token[self.pad_sentence_token])
+                x[i].append(self.token2index[self.pad_sentence_token])
             for _ in range(longer_y - len(y[i])):
-                y[i].append(self.word2token[self.pad_sentence_token])
+                y[i].append(self.token2index[self.pad_sentence_token])
             # Insert SOS token.
-            x[i].insert(0, self.word2token[self.start_sentence_token])
-            y[i].insert(0, self.word2token[self.start_sentence_token])
+            x[i].insert(0, self.token2index[self.start_sentence_token])
+            y[i].insert(0, self.token2index[self.start_sentence_token])
             # Append EOF token.
-            x[i].append(self.word2token[self.end_sentence_token])
-            y[i].append(self.word2token[self.end_sentence_token])
+            x[i].append(self.token2index[self.end_sentence_token])
+            y[i].append(self.token2index[self.end_sentence_token])
         return x, y
 
     def get_data_indices(self, data_type):
