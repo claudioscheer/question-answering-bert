@@ -20,7 +20,8 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 current_file_path = os.path.dirname(os.path.abspath(__file__))
 dataset = CustomDataLoader(
-    os.path.join(current_file_path, "../dataset/supervised.csv"), validation_split=0
+    os.path.join(current_file_path, "../dataset/sample.csv"),
+    split_percentages=[1, 0, 0],
 )
 
 # Define hyperparameters.
@@ -47,7 +48,6 @@ model = SequenceToSequence(encoder, decoder, device).to(device)
 
 def init_weights(m):
     for name, param in m.named_parameters():
-        print()
         nn.init.uniform_(param.data, -0.08, 0.08)
 
 
@@ -70,7 +70,7 @@ criterion = nn.CrossEntropyLoss(
 def train(model, dataset, optimizer, criterion, clip):
     model.train()
     epoch_loss = 0
-    for batch_index, (x, y) in dataset.get_batches(batch_size=3):
+    for batch_index, (x, y) in dataset.get_batches(batch_size=16, data_type=0):
         x = torch.tensor(x).transpose(0, 1).to(device)
         y = torch.tensor(y).transpose(0, 1).to(device)
 
@@ -97,7 +97,7 @@ def evaluate(model, dataset, criterion):
     epoch_loss = 0
     with torch.no_grad():
         batch_index = 0
-        for batch_index, (x, y) in dataset.get_batches(batch_size=3, validation=True):
+        for batch_index, (x, y) in dataset.get_batches(batch_size=3, data_type=1):
             x = torch.tensor(x).transpose(0, 1).to(device)
             y = torch.tensor(y).transpose(0, 1).to(device)
 
@@ -122,7 +122,7 @@ def epoch_time(start_time, end_time):
     return elapsed_mins, elapsed_secs
 
 
-N_EPOCHS = 100
+N_EPOCHS = 500
 CLIP = 1
 best_valid_loss = float("inf")
 for epoch in range(N_EPOCHS):
@@ -168,5 +168,6 @@ def predict(model, dataset, sentence):
         return answer
 
 
-answer = predict(model, dataset, "Qual é a fiabilidade da informação que disponibilizam?")
-print(answer)
+for _ in range(100):
+    answer = predict(model, dataset, "hi hi hi hi hi hi hi")
+    print(answer)
