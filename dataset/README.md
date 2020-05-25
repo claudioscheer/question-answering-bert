@@ -4,6 +4,8 @@
 - [https://www.kaggle.com/stanfordu/stanford-question-answering-dataset](https://www.kaggle.com/stanfordu/stanford-question-answering-dataset)
 - [https://www.kaggle.com/thoughtvector/customer-support-on-twitter](https://www.kaggle.com/thoughtvector/customer-support-on-twitter)
 - [https://www.kaggle.com/veeralakrishna/questionanswer-combination](https://www.kaggle.com/veeralakrishna/questionanswer-combination)
+- [https://rajpurkar.github.io/SQuAD-explorer/](https://rajpurkar.github.io/SQuAD-explorer/)
+- [https://tweetqa.github.io/](https://tweetqa.github.io/)
 
 
 ## Data augmentation
