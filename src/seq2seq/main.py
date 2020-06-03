@@ -49,7 +49,6 @@ model_args = {
     "num_beams": 3,
     "early_stopping": False,
     "learning_rate": 1e-4,
-    "early_stopping_metric": True,
 }
 
 model = Seq2SeqModel("bert", "bert-base-cased", "bert-base-cased", args=model_args)
