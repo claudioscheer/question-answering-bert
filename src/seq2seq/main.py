@@ -4,10 +4,10 @@ import pandas as pd
 from simpletransformers.seq2seq import Seq2SeqModel
 
 
-def get_dataset(file_path):
+def get_dataset(dataset_path):
     train = []
-    file_path = os.path.dirname(os.path.abspath(__file__))
-    with open(os.path.join(file_path, file_path), "r") as file:
+    current_file_path = os.path.dirname(os.path.abspath(__file__))
+    with open(os.path.join(current_file_path, dataset_path), "r") as file:
         train = file.readlines()
     data = []
     i = 0
