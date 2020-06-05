@@ -31,7 +31,7 @@ model_args = {
     "max_seq_length": 128,
     "train_batch_size": 4,
     "eval_batch_size": 1,
-    "num_train_epochs": 1,
+    "num_train_epochs": 16,
     "max_length": 128,
     "num_beams": 3,
     "early_stopping": False,
