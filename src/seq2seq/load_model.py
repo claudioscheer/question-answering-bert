@@ -12,6 +12,7 @@ transformers_logger = logging.getLogger("transformers")
 transformers_logger.setLevel(logging.WARNING)
 
 model_args = {
+    "eval_batch_size": 2,
     "max_seq_length": 128,
     "max_length": 128,
     "num_beams": 3,
