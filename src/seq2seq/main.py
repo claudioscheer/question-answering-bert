@@ -22,14 +22,14 @@ logging.basicConfig(level=logging.INFO)
 transformers_logger = logging.getLogger("transformers")
 transformers_logger.setLevel(logging.WARNING)
 
-train_df = get_dataset("../../dataset/twitter/twitter_en.train.txt")
-eval_df = get_dataset("../../dataset/twitter/twitter_en.eval.txt")
+train_df = get_dataset("../../dataset/twitter-dev/twitter_en.train.txt")
+eval_df = get_dataset("../../dataset/twitter-dev/twitter_en.eval.txt")
 
 model_args = {
     "fp16": False,
     "overwrite_output_dir": True,
     "max_seq_length": 128,
-    "train_batch_size": 4,
+    "train_batch_size": 16,
     "eval_batch_size": 1,
     "num_train_epochs": 16,
     "max_length": 128,
@@ -39,7 +39,8 @@ model_args = {
     "save_eval_checkpoints": False,
     "save_model_every_epoch": False,
     "save_best_model": True,
-    "gradient_accumulation_steps": 2,
+    "gradient_accumulation_steps": 8,
+    "evaluate_during_training_steps": 10,
 }
 
 model = Seq2SeqModel(encoder_type="bert", encoder_name="bert-base-cased", decoder_name="bert-base-cased", args=model_args)
