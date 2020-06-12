@@ -8,7 +8,7 @@
 
 ## Used datasets
 
-- [Tweets](https://drive.google.com/drive/folders/1WSG_ZGuDTnbI-FdFgxALcWZ4pJv2tEju)
+- [Tweets](https://github.com/claudioscheer/seq2seq-bert/releases/download/v0.0.2-alpha/dataset.zip)
 - [Enron emails](https://drive.google.com/drive/folders/18D6IupPk48IAfcMT-C4FyvxVMZatgR8g)
 
 
