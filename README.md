@@ -10,6 +10,7 @@
 
 - [Tweets](https://github.com/claudioscheer/seq2seq-bert/releases/download/v0.0.2-alpha/dataset.zip)
 - [Enron emails](https://github.com/claudioscheer/seq2seq-bert/releases/tag/v0.0.3-alpha)
+  - To create the dataset, refer to this notebook: [https://www.kaggle.com/claudioscheer/extract-reply-emails](https://www.kaggle.com/claudioscheer/extract-reply-emails)
 
 
 ## Datasets suggestions
