@@ -1,0 +1,77 @@
+\documentclass[letterpaper]{article}
+\usepackage{aaai}
+\usepackage{times}
+\usepackage{helvet}
+\usepackage{courier}
+\usepackage{hyperref}
+
+\frenchspacing
+\setlength{\pdfpagewidth}{8.5in}
+\setlength{\pdfpageheight}{11in}
+\pdfinfo{
+    /Title (Sequence-to-sequence Architecture Using BERT)
+    /Author (Claudio Scheer, Fernando Possebon)
+}
+\setcounter{secnumdepth}{0}
+\begin{document}
+% The file aaai.sty is the style file for AAAI Press 
+% proceedings, working notes, and technical reports.
+%
+\title{Sequence-to-sequence Architecture\\Using BERT}
+\author{Claudio Scheer \and Fernando Possebon\\
+    Pontifical Catholic University of Rio Grande do Sul - PUCRS\\
+    claudio.scheer@edu.pucrs.br,
+    claudio.scheer@edu.pucrs.br
+}
+
+\maketitle
+
+\begin{abstract}
+\begin{quote}
+Abstract.
+\end{quote}
+\end{abstract}
+
+\noindent Introduction.
+
+
+\section{Related works}
+Related works.
+
+
+\section{Deep Learning}
+
+\subsection{Sequence-to-sequence}
+
+The encoder-decoder architecture was initially proposed by \cite{DBLP:journals/corr/ChoMGBSB14}. Although simple, the idea was powerful: use a recurrent network to encode the input data and a decoder to transform the encoded input into the desirable output.
+
+\cite{DBLP:journals/corr/Graves13} - Generating sequences with LSTM
+
+\cite{DBLP:journals/corr/BahdanauCB14} - Proposed attention
+
+\cite{DBLP:journals/corr/VaswaniSPUJGKP17} - Attention is all you need
+
+
+\subsection{BERT}
+
+\cite{DBLP:journals/corr/abs-1810-04805} - BERT
+
+
+\subsection{Sequence-to-sequence BERT}
+
+Similarly to the original sequence-to-sequence model using a recurrent neural network, the model discussed in this paper uses two BERT neural network: one neural network to encode the input and another to decode the input encoded. 
+
+
+\section{Dataset}
+
+As we focused our project on automatic email response, we used The Enron Email Dataset\footnote{\href{https://www.kaggle.com/wcukierski/enron-email-dataset}{https://www.kaggle.com/wcukierski/enron-email-dataset}} to train our model. The dataset contains only the raw data from the emails. Therefore, we created a parser\footnote{\href{https://www.kaggle.com/claudioscheer/extract-reply-emails}{https://www.kaggle.com/claudioscheer/extract-reply-emails}} to extract the email and the replies from each email.
+
+To identify whether an email has a reply or not, we look for emails that contain the string \texttt{-----Original Message-----}. After filtering only emails with non-empty replies, we parse those emails in an input sequence (the original email) and in the target sequence (the reply email). The entire extraction was done automatically, that is, we did not manually extract or adjust any input.
+
+The original dataset contains 517,401 raw emails. After parsing the raw dataset, we created a dataset with 110,205 input and target pairs. Not all pairs were parsed correctly. In the parsed dataset, 8,368 pairs have specifics patterns. As this data does not represent a large part of the dataset, we trained the dataset with this "wrong" data.
+
+
+\bibliographystyle{aaai}
+\bibliography{references}
+
+\end{document}
