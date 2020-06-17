@@ -27,6 +27,7 @@ model_args = {
     "save_steps": 100000,
     "num_beams": 5,
     "gradient_accumulation_steps": 1,
+    "use_multiprocessing": False,
 }
 
 model = Seq2SeqModel(encoder_type="bert", encoder_name="bert-base-cased", decoder_name="bert-base-cased", args=model_args)
