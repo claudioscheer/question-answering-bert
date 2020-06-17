@@ -36,6 +36,9 @@ from transformers import (
     ElectraConfig,
     ElectraModel,
     ElectraTokenizer,
+    LongformerConfig,
+    LongformerModel,
+    LongformerTokenizer,
     PreTrainedModel,
     PreTrainedTokenizer,
     RobertaConfig,
@@ -60,13 +63,14 @@ logger = logging.getLogger(__name__)
 
 MODEL_CLASSES = {
     "auto": (AutoConfig, AutoModel, AutoTokenizer),
-    "bert": (BertConfig, BertModel, BertTokenizer),
-    "roberta": (RobertaConfig, RobertaModel, RobertaTokenizer),
-    "distilbert": (DistilBertConfig, DistilBertModel, DistilBertTokenizer),
-    "camembert": (CamembertConfig, CamembertModel, CamembertTokenizer),
-    "electra": (ElectraConfig, ElectraModel, ElectraTokenizer),
     "bart": (BartConfig, BartForConditionalGeneration, BartTokenizer),
+    "bert": (BertConfig, BertModel, BertTokenizer),
+    "camembert": (CamembertConfig, CamembertModel, CamembertTokenizer),
+    "distilbert": (DistilBertConfig, DistilBertModel, DistilBertTokenizer),
+    "electra": (ElectraConfig, ElectraModel, ElectraTokenizer),
+    "longformer": (LongformerConfig, LongformerModel, LongformerTokenizer),
     "marian": (MarianConfig, MarianMTModel, MarianTokenizer),
+    "roberta": (RobertaConfig, RobertaModel, RobertaTokenizer),
 }
 
 
@@ -109,13 +113,16 @@ class Seq2SeqModel:
         self.args = {
             "dataset_class": None,
             "do_sample": False,
-            "max_steps": -1,
-            "evaluate_generated_text": False,
-            "num_beams": 1,
-            "max_length": 20,
-            "repetition_penalty": 1.0,
-            "length_penalty": 2.0,
             "early_stopping": True,
+            "evaluate_generated_text": False,
+            "length_penalty": 2.0,
+            "max_length": 20,
+            "max_steps": -1,
+            "num_beams": 1,
+            "num_return_sequences": 1,
+            "repetition_penalty": 1.0,
+            "top_k": None,
+            "top_p": None,
         }
 
         self.args.update(global_args)
@@ -417,7 +424,7 @@ class Seq2SeqModel:
 
                     if args["evaluate_during_training"] and (args["evaluate_during_training_steps"] > 0 and global_step % args["evaluate_during_training_steps"] == 0):
                         # Only evaluate when single GPU otherwise metrics may not average well
-                        results = self.eval_model(eval_data, verbose=verbose and args["evaluate_during_training_verbose"], silent=True, **kwargs,)
+                        results = self.eval_model(eval_data, verbose=verbose and args["evaluate_during_training_verbose"], silent=args["evaluate_during_training_silent"], **kwargs,)
                         for key, value in results.items():
                             tb_writer.add_scalar("eval_{}".format(key), value, global_step)
 
@@ -493,7 +500,7 @@ class Seq2SeqModel:
                 self._save_model(output_dir_current, optimizer, scheduler, model=model)
 
             if args["evaluate_during_training"]:
-                results = self.eval_model(eval_data, verbose=verbose and args["evaluate_during_training_verbose"], silent=True, **kwargs)
+                results = self.eval_model(eval_data, verbose=verbose and args["evaluate_during_training_verbose"], silent=args["evaluate_during_training_silent"], **kwargs,)
 
                 if args["save_eval_checkpoints"]:
                     self._save_model(output_dir_current, optimizer, scheduler, results=results)
@@ -671,6 +678,9 @@ class Seq2SeqModel:
                     early_stopping=self.args["early_stopping"],
                     repetition_penalty=self.args["repetition_penalty"],
                     do_sample=self.args["do_sample"],
+                    top_k=self.args["top_k"],
+                    top_p=self.args["top_p"],
+                    num_return_sequences=self.args["num_return_sequences"],
                 )
             else:
                 outputs = self.model.generate(
@@ -682,9 +692,13 @@ class Seq2SeqModel:
                     early_stopping=self.args["early_stopping"],
                     repetition_penalty=self.args["repetition_penalty"],
                     do_sample=self.args["do_sample"],
+                    top_k=self.args["top_k"],
+                    top_p=self.args["top_p"],
+                    num_return_sequences=self.args["num_return_sequences"],
                 )
 
             all_outputs.extend(outputs)
+
         return [self.decoder_tokenizer.decode(output_id, skip_special_tokens=True, clean_up_tokenization_spaces=True) for output_id in all_outputs]
 
     def compute_metrics(self, labels, preds, **kwargs):
@@ -701,7 +715,7 @@ class Seq2SeqModel:
         Returns:
             result: Dictionary containing evaluation results.
         """  # noqa: ignore flake8"
-        assert len(labels) == len(preds)
+        # assert len(labels) == len(preds)
 
         results = {}
         for metric, func in kwargs.items():
