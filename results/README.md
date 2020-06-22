@@ -1,6 +1,6 @@
-## Generated answers
+## Generated replies
 
-These answers were generated using the model available in the [v0.0.4-alpha](https://github.com/claudioscheer/seq2seq-bert/releases/tag/v0.0.4-alpha) release.
+These replies were generated using the model available in the [v0.0.4-alpha](https://github.com/claudioscheer/seq2seq-bert/releases/tag/v0.0.4-alpha) release.
 
 | Email | Reply |
 |---|---|
