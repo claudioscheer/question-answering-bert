@@ -2,7 +2,7 @@
 
 These answers were generated using the model available in the [v0.0.4-alpha](https://github.com/claudioscheer/seq2seq-bert/releases/tag/v0.0.4-alpha) release.
 
-|   |   |
+| Email | Reply |
 |---|---|
 | Morning John, I'm still working on the mini-PRC for Lavo.  Sean Lalani has not yet been ranked and rumour has it that he reports to you now.  Can you confirm and send me a number. Thanks! | John, Your telerate login is jgriffit and your password is houstonunix! Let me know if you have any questions. Thanks, Julie 39225 503 |
 | hi | Hi how are you? |
