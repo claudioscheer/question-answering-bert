@@ -1,16 +1,19 @@
 \documentclass[letterpaper]{article}
+
 \usepackage{aaai}
 \usepackage{times}
 \usepackage{helvet}
 \usepackage{courier}
 \usepackage{hyperref}
+\usepackage{siunitx}
+\sisetup{output-exponent-marker=\ensuremath{\mathrm{e}}}
 
 \frenchspacing
 \setlength{\pdfpagewidth}{8.5in}
 \setlength{\pdfpageheight}{11in}
 \pdfinfo{
     /Title (Sequence-to-sequence Architecture Using BERT)
-    /Author (Claudio Scheer, José Fernando Possebon)
+    /Author (Claudio Scheer, Jos\'e Fernando Possebon)
 }
 \setcounter{secnumdepth}{0}
 \begin{document}
@@ -18,7 +21,7 @@
 % proceedings, working notes, and technical reports.
 %
 \title{Sequence-to-sequence Architecture\\Using BERT}
-\author{Claudio Scheer \and José Fernando Possebon\\
+\author{Claudio Scheer \and Jos\'e Fernando Possebon\\
     Pontifical Catholic University of Rio Grande do Sul - PUCRS\\
     claudio.scheer@edu.pucrs.br,
     jose.possebon@edu.pucrs.br
@@ -27,9 +30,9 @@
 \maketitle
 
 \begin{abstract}
-\begin{quote}
-Abstract.
-\end{quote}
+    \begin{quote}
+        Abstract.
+    \end{quote}
 \end{abstract}
 
 \noindent Introduction.
@@ -41,7 +44,7 @@ Related works.
 
 \section{Deep Learning}
 
-In this section, we will discuss the sequence-to-sequence model using recurrent neural networks and transformers. Also, in a nutshell, we discuss how a BERT model works.
+In this section, we will discuss the sequence-to-sequence model using recurrent neural networks and transformers. In addition, we also discuss how a BERT model works.
 
 \subsection{Sequence-to-sequence}
 
@@ -58,24 +61,53 @@ The encoder-decoder architecture was initially proposed by \cite{DBLP:journals/c
 
 \cite{DBLP:journals/corr/abs-1810-04805} - BERT
 
-Similarly to the original sequence-to-sequence model using a recurrent neural network, the model discussed in this paper uses two BERT neural network: one neural network to encode the input and another to decode the input encoded. 
+Similarly to the original sequence-to-sequence model using a recurrent neural network, the model discussed in this paper uses two BERT neural network: one neural network to encode the input and another to decode the input encoded.
 
 
 \section{Dataset}
 
-As we focused our project on automatic email reply, we used The Enron Email Dataset\footnote{\href{https://www.kaggle.com/wcukierski/enron-email-dataset}{https://www.kaggle.com/wcukierski/enron-email-dataset}} to train our model. The dataset contains only the raw data of the emails. Therefore, we created a parser\footnote{\href{https://www.kaggle.com/claudioscheer/extract-reply-emails}{https://www.kaggle.com/claudioscheer/extract-reply-emails}} to extract the email and the replies from each email.
+As we focused our project on automatic email reply, we used The Enron Email Dataset\footnote{\href{https://www.kaggle.com/wcukierski/enron-email-dataset}{https://www.kaggle.com/wcukierski/enron-email-dataset}} to train our model. The dataset contains only the raw data of the emails. Therefore, we created a parser\footnote{\href{https://www.kaggle.com/claudioscheer/extract-reply-emails}{https://www.kaggle.com/claudioscheer/extract-reply-emails}} to extract the email and the replies from the raw data of the email.
 
 To identify whether an email has a reply or not, we look for emails that contain the string \texttt{-----Original Message-----}. After filtering only emails with non-empty replies, we parse those emails in an input sequence (the original email) and in the target sequence (the reply email). The entire extraction was done automatically, that is, we did not manually extract or adjust any email.
 
 We used two libraries to parse the dataset: \texttt{talon}\footnote{\href{https://github.com/mailgun/talon}{https://github.com/mailgun/talon}}, provided by Mailgun, and \texttt{email}, provided by Python. The \texttt{email} package returns the email body with the entire thread. To extract only the last reply from an email thread, we use the \texttt{talon} package.
 
-The original dataset contains 517,401 raw emails. After parsing the raw dataset, we created a dataset with 110,205 input and target pairs.
+The original dataset contains \num{517401} raw emails. After parsing the raw dataset, we created a dataset with \num{110205} input and target pairs. As we have limited resources available, we limit the length of emails to \num{256} characters. We ended up with \num{40062} emails with reply in the dataset.
 
-In the parsed dataset, we have 8,368 pairs with specifics email and reply patterns. Since these pairs do not represent a large part of the dataset, we trained the dataset with this "wrong" data.
+Of that total, we selected \num{10002} emails to train the sequence-to-sequence model. From the rest of the emails, we chose random emails to evaluate the model, as shown in Section~Results.
+
+
+\section{Implementation}
+
+We use a pre-trained BERT model, provided by Hugging Face\footnote{\href{https://huggingface.co/}{https://huggingface.co/}}. Hugging Face also provides a PyTorch library for using the pre-trained models. Therefore, this library was used to implement the sequence-to-sequence model.
+
+To train the model, we use the following hyperparameters:
 
 \begin{itemize}
-    \item discuss the process to filter out wrong data
+    \item Learning rate: \num{3e-5};
+    \item Epochs: \num{128};
+    \item Adam epsilon: \num{1e-08};
+    \item Batch size: \num{8};
+    \item Beam search hypothesis: \num{3};
 \end{itemize}
+
+The batch size was limited by the amount of memory available on the GPU used to train the model. A TITAN X with 12 GB of memory was used. \num{8} was the highest possible number.
+
+Different values were tested for the learning rate and epochs. We did not change the default value for Adam epsilon. We also tested to accumulate gradients from more than one batch, but did not get good results.
+
+Training the sequence-to-sequence model in less epochs resulted in a model with a lot of noise in the reply email. As we had a limited batch size, increasing epochs increased the training time considerably. Training time is also the reason why the entire dataset was not used. The final model took about \num{6} days to train.
+
+When we increased the learning rate to \num{1e-4}, the model converged faster until the value of the loss function was about \num{2}\footnote{We forgot to capture the loss values over the training epochs. And, as the GPU is shared with other research groups, and we had monopolized the GPU for about three weeks, we were unable to run the experiments again.}. After that point, the loss started to increase and decrease according to the batch. This same behavior is true when using \num{3e-5} as learning rate. However, the difference is that the loss function starts to have this behavior when the loss value is closer to zero.
+
+The last changed hyperparameter was the number of hypothesis explored in each branch of the beam search. We tested a number greater than \num{3}. However, higher values resulted in some words being out of context in the generated reply email.
+
+
+\section{Results}
+
+
+
+https://huggingface.co/blog/how-to-generate
+
 
 
 \bibliographystyle{aaai}
