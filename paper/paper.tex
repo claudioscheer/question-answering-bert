@@ -51,7 +51,7 @@ The encoder-decoder architecture was initially proposed by \cite{DBLP:journals/c
 
 \cite{DBLP:journals/corr/Graves13} - Generating sequences with LSTM
 
- - Attention is all you need
+- Attention is all you need
 
 
 \subsection{BERT}
@@ -94,6 +94,9 @@ To train the model, we use the following hyperparameters:
     \item Beam search hypothesis: \num{3};
 \end{itemize}
 
+% Explanation of warm-up.
+% https://datascience.stackexchange.com/questions/55991/in-the-context-of-deep-learning-what-is-training-warmup-steps
+
 The batch size was limited by the amount of memory available on the GPU used to train the model. A TITAN X with 12 GB of memory was used. \num{8} was the highest possible number.
 
 Different values were tested for the learning rate and epochs. We did not change the default value for Adam epsilon. We also tested to accumulate gradients from more than one batch, but did not get good results.
@@ -107,7 +110,7 @@ The last changed hyperparameter was the number of hypothesis explored in each br
 
 \section{Results}
 
-The evaluation of the model was 
+The evaluation of the model was
 
 
 
@@ -116,6 +119,6 @@ https://huggingface.co/blog/how-to-generate
 
 
 \bibliographystyle{aaai}
-\bibliography{references}
+\bibliography{../latex-data/references}
 
 \end{document}
