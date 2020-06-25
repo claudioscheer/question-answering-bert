@@ -18,7 +18,7 @@ model_args = {
     "overwrite_output_dir": True,
     "max_seq_length": 256,
     "eval_batch_size": 1,
-    "train_batch_size": 12,
+    "train_batch_size": 10,
     "num_train_epochs": 16,
     "max_length": 256,
     "learning_rate": 1e-4,
