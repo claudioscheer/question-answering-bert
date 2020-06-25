@@ -31,6 +31,7 @@ model_args = {
     "use_multiprocessing": False,
     "logging_steps": 50,
     "adam_epsilon": 1e-4,
+    "warmup_steps": 10000,
 }
 
 model = Seq2SeqModel(encoder_type="bert", encoder_name="bert-base-cased", decoder_name="bert-base-cased", args=model_args)
