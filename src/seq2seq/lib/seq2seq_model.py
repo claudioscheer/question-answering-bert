@@ -6,6 +6,7 @@ import random
 import warnings
 from multiprocessing import cpu_count
 from pathlib import Path
+import csv
 
 import numpy as np
 from tqdm.auto import tqdm, trange
@@ -14,7 +15,6 @@ import pandas as pd
 import torch
 from .global_args import global_args
 from .seq2seq_utils import Seq2SeqDataset, SimpleSummarizationDataset
-from tensorboardX import SummaryWriter
 from torch.nn.utils.rnn import pad_sequence
 from torch.utils.data import DataLoader, Dataset, RandomSampler, SequentialSampler
 from torch.utils.data.distributed import DistributedSampler
@@ -277,7 +277,10 @@ class Seq2SeqModel:
         model = self.model
         args = self.args
 
-        tb_writer = SummaryWriter(logdir=args["tensorboard_dir"])
+        csv_file = open("outputs/log.csv", "w")
+        csv_file_writer = csv.writer(csv_file, delimiter=",", quotechar='"', quoting=csv.QUOTE_ALL)
+        csv_file_writer.writerow(["step", "lr", "loss"])
+
         train_sampler = RandomSampler(train_dataset)
         train_dataloader = DataLoader(train_dataset, sampler=train_sampler, batch_size=args["train_batch_size"])
 
@@ -408,8 +411,7 @@ class Seq2SeqModel:
 
                     if args["logging_steps"] > 0 and global_step % args["logging_steps"] == 0:
                         # Log metrics
-                        tb_writer.add_scalar("lr", scheduler.get_lr()[0], global_step)
-                        tb_writer.add_scalar("loss", (tr_loss - logging_loss) / args["logging_steps"], global_step)
+                        csv_file_writer.writerow([global_step, scheduler.get_lr()[0], (tr_loss - logging_loss) / args["logging_steps"]])
                         logging_loss = tr_loss
                         if args["wandb_project"]:
                             wandb.log(
@@ -425,8 +427,6 @@ class Seq2SeqModel:
                     if args["evaluate_during_training"] and (args["evaluate_during_training_steps"] > 0 and global_step % args["evaluate_during_training_steps"] == 0):
                         # Only evaluate when single GPU otherwise metrics may not average well
                         results = self.eval_model(eval_data, verbose=verbose and args["evaluate_during_training_verbose"], silent=args["evaluate_during_training_silent"], **kwargs,)
-                        for key, value in results.items():
-                            tb_writer.add_scalar("eval_{}".format(key), value, global_step)
 
                         output_dir_current = os.path.join(output_dir, "checkpoint-{}".format(global_step))
 
@@ -560,6 +560,7 @@ class Seq2SeqModel:
                                     train_iterator.close()
                                 return global_step, tr_loss / global_step
 
+        csv_file.close()
         return global_step, tr_loss / global_step
 
     def eval_model(self, eval_data, output_dir=None, verbose=True, silent=False, **kwargs):

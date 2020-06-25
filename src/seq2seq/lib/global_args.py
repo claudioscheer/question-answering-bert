@@ -43,7 +43,6 @@ global_args = {
     "save_steps": 2000,
     "save_optimizer_and_scheduler": True,
     "silent": False,
-    "tensorboard_dir": None,
     "train_batch_size": 8,
     "use_cached_eval_features": False,
     "use_early_stopping": False,
