@@ -9,7 +9,7 @@ transformers_logger = logging.getLogger("transformers")
 transformers_logger.setLevel(logging.WARNING)
 
 file_path = os.path.dirname(os.path.abspath(__file__))
-train_df = pd.read_csv(os.path.join(file_path, "../dataset/input-target-256-dev-small-small.csv"))
+train_df = pd.read_csv(os.path.join(file_path, "../dataset/input-target-256.csv"))
 train_df.drop(train_df.columns[[0]], axis=1, inplace=True)
 train_df.dropna(subset=["input_text", "target_text"], inplace=True)
 
@@ -18,7 +18,7 @@ model_args = {
     "overwrite_output_dir": True,
     "max_seq_length": 256,
     "eval_batch_size": 1,
-    "train_batch_size": 8,
+    "train_batch_size": 12,
     "num_train_epochs": 16,
     "max_length": 256,
     "learning_rate": 1e-4,
