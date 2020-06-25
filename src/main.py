@@ -23,7 +23,7 @@ model_args = {
     "max_length": 256,
     "learning_rate": 1e-4,
     "save_eval_checkpoints": False,
-    "save_model_every_epoch": False,
+    "save_model_every_epoch": True,
     "save_best_model": False,
     "save_steps": 20000,
     "num_beams": 3,
