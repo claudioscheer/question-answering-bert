@@ -23,8 +23,7 @@
 \title{Sequence-to-sequence Architecture\\Using BERT}
 \author{Claudio Scheer \and Jos\'e Fernando Possebon\\
     Pontifical Catholic University of Rio Grande do Sul - PUCRS\\
-    claudio.scheer@edu.pucrs.br,
-    jose.possebon@edu.pucrs.br
+    \{claudio.scheer, jose.possebon\}@edu.pucrs.br
 }
 
 \maketitle
@@ -52,16 +51,16 @@ The encoder-decoder architecture was initially proposed by \cite{DBLP:journals/c
 
 \cite{DBLP:journals/corr/Graves13} - Generating sequences with LSTM
 
-\cite{DBLP:journals/corr/BahdanauCB14} - Proposed attention
-
-\cite{DBLP:journals/corr/VaswaniSPUJGKP17} - Attention is all you need
+ - Attention is all you need
 
 
 \subsection{BERT}
 
-\cite{DBLP:journals/corr/abs-1810-04805} - BERT
+BERT is a short for Bidirectional Encoder Representations from Transformers, proposed by \cite{DBLP:journals/corr/abs-1810-04805}. Transformers network was proposed by \cite{DBLP:journals/corr/VaswaniSPUJGKP17} and use the attentions mechanism, proposed by \cite{DBLP:journals/corr/BahdanauCB14}, to learn representations between words that can express their contextual meaning.
 
-Similarly to the original sequence-to-sequence model using a recurrent neural network, the model discussed in this paper uses two BERT neural network: one neural network to encode the input and another to decode the input encoded.
+The original BERT model was pre-trained in a corpus comprising Wikipedia and Book Corpus. BERT has two pre-trained models available: BERT large, with \num{345}{M} parameters (24 layers) and BERT base, with \num{110}{M} (12 layers).
+
+The model was pre-trained for masked language modeling nas next sentence predictions tasks. However, with the replacement of the last layer and fine-tuning, the model can be used for other tasks, using the same parameters as the original BERT model.
 
 
 \section{Dataset}
@@ -80,6 +79,10 @@ Of that total, we selected \num{10002} emails to train the sequence-to-sequence 
 \section{Implementation}
 
 We use a pre-trained BERT model, provided by Hugging Face\footnote{\href{https://huggingface.co/}{https://huggingface.co/}}. Hugging Face also provides a PyTorch library for using the pre-trained models. Therefore, this library was used to implement the sequence-to-sequence model.
+
+The \texttt{BertModel} class provided by Hugging Face can behave as an encoder or decoder. The difference is that, for the encoder, only a layer of self-attention is used and, for decoder, a layer of cross-attention is added between the layers of self-attention. In a nutshell, the difference is that self-attention is only applied to the input sequence, while cross-attention is applied to the input and output sentences.
+
+we used the bert base
 
 To train the model, we use the following hyperparameters:
 
