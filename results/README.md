@@ -13,3 +13,5 @@ These replies were generated using the model available in the [v0.0.6-alpha](htt
 | Agustin Perez is wanting to send out a confirmation for YD9296.1 (currently booked to the old name Petrotemex, S.A. de C.V.) by this afternoon, if at all possible. Do we have enough ""lead time"" to get this out today? Thanks, Gordon | I heard from Kevin at 4 : 00 pm. Would you like to change it? The deal is 1190921. Thanks, JMF |
 | Hi. Can you send me the invitation to the meeting? | Hi Liz, I will attend this. Lizzette to send you a copy of the original invitation for you. Thank you. |
 | Shall we have the meeting tomorrow? | meeting is postponed because the 3 : 00 p. m. meeting today. meeting is canceled for today. |
+| i don't even know your salary now. | haha. i am going to buy a car for you. why don't you call me about that? |
+| Friendly reminder. | Thanks. of course you'll be taking some time off. too much risk. |

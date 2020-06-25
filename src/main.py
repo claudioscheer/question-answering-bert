@@ -9,7 +9,7 @@ transformers_logger = logging.getLogger("transformers")
 transformers_logger.setLevel(logging.WARNING)
 
 file_path = os.path.dirname(os.path.abspath(__file__))
-train_df = pd.read_csv(os.path.join(file_path, "../../dataset/input-target-256-dev-small-small.csv"))
+train_df = pd.read_csv(os.path.join(file_path, "../dataset/input-target-256-dev-small-small.csv"))
 train_df.drop(train_df.columns[[0]], axis=1, inplace=True)
 train_df.dropna(subset=["input_text", "target_text"], inplace=True)
 
