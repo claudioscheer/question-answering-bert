@@ -2,3 +2,4 @@ transformers
 pandas
 tensorboardX
 torchtext
+matplotlib
