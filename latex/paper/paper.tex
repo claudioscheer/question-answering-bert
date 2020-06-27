@@ -5,15 +5,17 @@
 \usepackage{helvet}
 \usepackage{courier}
 \usepackage{hyperref}
+\usepackage{tabularx}
 \usepackage{siunitx}
 \usepackage{graphicx}
+\usepackage{todonotes}
 \sisetup{output-exponent-marker=\ensuremath{\mathrm{e}}}
 
 \frenchspacing
 \setlength{\pdfpagewidth}{8.5in}
 \setlength{\pdfpageheight}{11in}
 \pdfinfo{
-    /Title (Sequence-to-sequence Architecture Using BERT)
+    /Title (Email Autoresponder using a Sequence-to-sequence Architecture with BERT)
     /Author (Claudio Scheer, Jos\'e Fernando Possebon)
 }
 \setcounter{secnumdepth}{0}
@@ -21,7 +23,7 @@
 % The file aaai.sty is the style file for AAAI Press 
 % proceedings, working notes, and technical reports.
 %
-\title{Sequence-to-sequence Architecture\\Using BERT}
+\title{Email Autoresponder using a Sequence-to-sequence\\Architecture with BERT}
 \author{Claudio Scheer \and Jos\'e Fernando Possebon\\
     Pontifical Catholic University of Rio Grande do Sul - PUCRS\\
     \{claudio.scheer, jose.possebon\}@edu.pucrs.br
@@ -31,7 +33,7 @@
 
 \begin{abstract}
     \begin{quote}
-        Abstract.
+        Due to the large number of emails that people receive, it is not just about filtering what is spam or not, but it is also essential to help people filter what requires their attention from something that can be done by an intelligent agent. If we consider the scenario of a sales representative who sells software licenses, for example, it is common to receive requests for quotations from their customers about the price of software licenses. We believe that it is possible to implement an agent that could read the emails, understand what is requested, and respond to their emails automatically.
     \end{quote}
 \end{abstract}
 
@@ -78,6 +80,8 @@ To identify whether an email has a reply or not, we look for emails that contain
 Two libraries were used to parse the dataset: \texttt{talon}\footnote{\href{https://github.com/mailgun/talon}{https://github.com/mailgun/talon}}, provided by Mailgun, and \texttt{email}, provided by Python. The \texttt{email} package returns the email body with the entire thread. To extract only the last reply from an email thread, the \texttt{talon} package was used.
 
 The original dataset contains \num{517401} raw emails. After parsing the raw dataset, the new dataset consisted of \num{110205} input and target pairs. As the resources available to fine-tune the model were limited,  only emails with less than \num{256} characters were used. The final dataset consisted of \num{40062} emails. All of these input and target pairs were used to train the BERT model.
+
+\num{21} emails that were not correctly parsed were used to evaluate the model and obtaing the BLEU score. These emails were chosen manually from the dataset.
 
 
 \section{Implementation}
@@ -132,11 +136,60 @@ The last changed hyperparameter was the number of hypothesis explored in each br
 
 \section{Results}
 
-The evaluation of the model was
+The fine-tuned model still has some noise in the replies generated. Therefore, only the first part of the text of the generated replies was used. This is valid for the BLEU score and for the subjective evaluation.
+
+The BLEU score was used to get a quantitative result of the model. Using the evaluation dataset, the BLEU score was \num{0.0}. This does not mean that the replies were bad. This means that the generated replies do not match to the replies originally sent. Table~\ref{table:example-reply-bleu} shows some examples of why the BLEU score was \num{0.0}.
+
+\begin{table}[ht]
+    \centering
+    \begin{tabularx}{0.47\textwidth}{|X|X|X|}
+        \hline
+        \textbf{Input}                                                  & \textbf{Target}                                          & \textbf{Generated}                                                                                                           \\
+        \hline
+        nevermind.  are you at work?                                    & yea                                                      & i'm all alone over here...                                                                                                   \\
+        \hline
+        what re your plans for tomorrow?                                & drop prentice's car off at shop; go to dome              & leaving early tomorrow. leaving early. leaving early. leaving early.                                                         \\
+        \hline
+        I just refaxed it.  For your information, my total hours is 49. & I noted your hours..I will look for the t/s Thanks Lisa! & Thanks Rick, and let's talk after the holidays about a new game plan... Best regards and happy thanksgiving. Jaime Williams. \\
+        \hline
+    \end{tabularx}
+    \caption{Example of generated replies}
+    \label{table:example-reply-bleu}
+\end{table}
+
+As shown in Table~\ref{table:example-reply-bleu}, BLEU is not a good option for this problem. Therefore, a subjective assessment of the replies was made. We generated some replies, created a form using Google Forms, and asked some people to answer the questionnaire.
+
+The question asked for each reply generated was: Was this reply generated using Artificial Intelligence software? The interviewee could choose only yes or no.
+
+The form contains only five emails and replies. The Table~\ref{table:is-it-ai-test} shows the results of the test answered XXX times. The column AI? shows the percentage of answers that believed the reply was generated by an AI system. The column Correct? shows whether what people believed was correct or not.
+
+\begin{table*}[ht]
+    \centering
+    \begin{tabularx}{\textwidth}{|X|X|c|c|}
+        \hline
+        \textbf{Email}                                                                                                                                                                                        & \textbf{Reply}                                                                                                                                                                                                                     & \textbf{AI?} & \textbf{Correct?} \\
+        \hline
+        Let me know if this works.                                                                                                                                                                            & This works great. Will let you know. as soon as I get a chance, let me know                                                                                                                                                        & \num{0}{\%}  & yes               \\
+        \hline
+        Following are the terms under which I ran the Forward Obligation report and received this message: General SQL error. ORA-00907: missing right parenthesis. Terms: Let me know what you find. Thanks! & Kate, I ran the report with the exact same options and it came right up. Try it again, exactly as before. Usually if it works for one person and not the other it is a security issue. Let me know what happens. Thanks, Brettther & \num{0}{\%}  & yes               \\
+        \hline
+        Didn't you trade uranium at one time?                                                                                                                                                                 & Yeah, I know the buisness VERY well.                                                                                                                                                                                               & \num{0}{\%}  & no                \\
+        \hline
+        Are you free for drinks either Monday or Wednesday?                                                                                                                                                   & Yes                                                                                                                                                                                                                                & \num{0}{\%}  & no                \\
+        \hline
+        Mons, I would be available on the 25th, 26th or 27th. I cannot make it the week of the 18th. Thanks, Bill.                                                                                            & OK, so, let's see if we can get together later today. I have to leave at 16:00 for a few minutes, but I am sure that I will be out at that moment. Thank you Kim.                                                                  & \num{0}{\%}  & yes               \\
+        \hline
+    \end{tabularx}
+    \caption{Is it AI? test}
+    \label{table:is-it-ai-test}
+\end{table*}
+
+\todo[inline]{Explain here the results of the form.}
 
 
+\section{Conclusion}
 
-https://huggingface.co/blog/how-to-generate
+Despite the small dataset used and limited resources available, the fine-tuned model performed well. In a further works, the dataset must be revised to avoid data that may cause noise in the predictions.
 
 
 
