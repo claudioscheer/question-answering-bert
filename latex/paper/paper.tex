@@ -101,7 +101,7 @@ In this paper, the BERT base architecture was used. This model uses fewer resour
     \item Beam search hypothesis: \num{3};
 \end{itemize}
 
-In the fine-tune process, an EC2 spot instance on AWS was used. A checkpoint of the model was saved every \num{20000} steps, mitigating the loss of processment if the instance was suddenly stopped. The instance was equipped with a 16 GB NVIDIA T4 GPU (CUDA 10.2).
+In the fine-tune process, an EC2 spot instance on AWS was used. A checkpoint of the model was saved every \num{20000} steps, mitigating the loss of processment if the instance was suddenly stopped. The instance was equipped with a NVIDIA T4 GPU (CUDA \num{10.2}), with \num{16}{GB} of memory.
 
 The batch size was limited by the amount of GPU memory available. We also tested to accumulate and update the gradients after \num{4} steps, but we did not see any improvements.
 
