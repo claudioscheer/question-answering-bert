@@ -5,6 +5,7 @@
 \usepackage{hyperref}
 \usepackage{tabularx}
 \usepackage{siunitx}
+\usepackage{todonotes}
 \sisetup{output-exponent-marker=\ensuremath{\mathrm{e}}}
 
 \usetheme{Madrid}
@@ -158,6 +159,8 @@
 
 \begin{frame}
   \frametitle{BERT architecture}
+
+  \todo[inline]{Describe here the architecture that the professor showed in the class.}
 \end{frame}
 
 \begin{frame}
@@ -173,10 +176,10 @@
 \end{frame}
 
 \begin{frame}
-  \frametitle{Learning Rate Schedule}
+  \frametitle{Learning rate schedule}
 
   \begin{itemize}
-    \item Warm-up steps: \num{10000};
+    \item Warm-up steps: \num{5000};
     \item Learning rate: \num{1e-4};
   \end{itemize}
 
@@ -194,10 +197,16 @@
           \begin{itemize}
             \item Adam epsilon: \num{1e-4};
           \end{itemize}
-    \item Batch size: \num{8};
-    \item Training epochs: \num{32};
+    \item Batch size: \num{10};
+    \item Training epochs: \num{10.5};
     \item Beam search hypothesis: \num{3};
   \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Loss function}
+
+  \includegraphics[width=\textwidth]{../images/loss_function.pdf}
 \end{frame}
 %---------------------------------------------------------
 
@@ -206,22 +215,67 @@
 \section{Results}
 
 \begin{frame}
-  \frametitle{Generated replies}
+  \frametitle{BLEU score}
+
+  \begin{itemize}
+    \item <1-> 21 emails in the evaluation dataset;
+    \item <2-> BLEU score = \num{0.0};
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{BLEU score}
 
   \begin{table}
-    \centering
-    \begin{tabularx}{\textwidth}{|X|X|c|}
+    \begin{tabularx}{\textwidth}{|X|X|X|}
       \hline
-      \textbf{Email}                      & \textbf{Reply}                                                                              & \textbf{AI?} \\
+      \textbf{Input}                                                  & \textbf{Target}                                          & \textbf{Generated}                                                                                                           \\
       \hline
-      Shall we have the meeting tomorrow? & meeting is postponed because the 3 : 00 p. m. meeting today. meeting is canceled for today. & \num{30}{\%} \\
+      nevermind.  are you at work?                                    & yea                                                      & i'm all alone over here...                                                                                                   \\
       \hline
-      hi                                  & Hi how are you?                                                                             & \num{10}{\%} \\
+      what re your plans for tomorrow?                                & drop prentice's car off at shop; go to dome              & leaving early tomorrow. leaving early. leaving early. leaving early.                                                         \\
       \hline
-      you look so handsome today          & why thank you, you do as well                                                               & \num{30}{\%} \\
+      I just refaxed it.  For your information, my total hours is 49. & I noted your hours..I will look for the t/s Thanks Lisa! & Thanks Rick, and let's talk after the holidays about a new game plan... Best regards and happy thanksgiving. Jaime Williams. \\
       \hline
     \end{tabularx}
   \end{table}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Generated replies}
+
+  \begin{table}
+    \scriptsize
+    \begin{tabularx}{\textwidth}{|X|X|c|c|}
+      \hline
+      \textbf{Email}                                                                                                                                                                                        & \textbf{Reply}                                                                                                                                                                                                                     & \textbf{AI?} & \textbf{Correct?} \\
+      \hline
+      Let me know if this works.                                                                                                                                                                            & This works great. Will let you know. as soon as I get a chance, let me know                                                                                                                                                        & \num{0}{\%}  & yes               \\
+      \hline
+      Following are the terms under which I ran the Forward Obligation report and received this message: General SQL error. ORA-00907: missing right parenthesis. Terms: Let me know what you find. Thanks! & Kate, I ran the report with the exact same options and it came right up. Try it again, exactly as before. Usually if it works for one person and not the other it is a security issue. Let me know what happens. Thanks, Brettther & \num{0}{\%}  & yes               \\
+      \hline
+      Didn't you trade uranium at one time?                                                                                                                                                                 & Yeah, I know the buisness VERY well.                                                                                                                                                                                               & \num{0}{\%}  & no                \\
+      \hline
+      Are you free for drinks either Monday or Wednesday?                                                                                                                                                   & Yes                                                                                                                                                                                                                                & \num{0}{\%}  & no                \\
+      \hline
+      Mons, I would be available on the 25th, 26th or 27th. I cannot make it the week of the 18th. Thanks, Bill.                                                                                            & OK, so, let's see if we can get together later today. I have to leave at 16:00 for a few minutes, but I am sure that I will be out at that moment. Thank you Kim.                                                                  & \num{0}{\%}  & yes               \\
+      \hline
+    \end{tabularx}
+  \end{table}
+\end{frame}
+%---------------------------------------------------------
+
+
+%---------------------------------------------------------
+\section{Miscellaneous}
+
+\begin{frame}
+  \frametitle{Miscellaneous}
+
+  \begin{itemize}
+    \item \href{https://github.com/claudioscheer/seq2seq-bert}{https://github.com/claudioscheer/seq2seq-bert};
+    \item \href{https://github.com/claudioscheer/seq2seq-bert/releases/tag/v0.0.8-alpha}{Final release (v0.0.8)};
+  \end{itemize}
 \end{frame}
 %---------------------------------------------------------
 
