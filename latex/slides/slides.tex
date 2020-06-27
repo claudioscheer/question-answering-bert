@@ -161,14 +161,16 @@
   \frametitle{Hugging Face}
 
   \begin{itemize}
-    \item BERT base was used;
+    \item BERT base;
           \begin{itemize}
             \item 12 layers;
           \end{itemize}
-    \item Hugging Face and PyTorch was used;
+    \item Hugging Face and PyTorch;
+    \item NVIDIA T4 GPU on AWS;
+          \begin{itemize}
+            \item 16GB;
+          \end{itemize}
   \end{itemize}
-
-  \todo[inline]{Put here how we trained the model.}
 \end{frame}
 
 \begin{frame}
@@ -200,7 +202,7 @@
             \item Adam epsilon: \num{1e-4};
           \end{itemize}
     \item Batch size: \num{10};
-    \item Training epochs: \num{10.5};
+    \item Fine-tuning epochs: \num{10.5};
     \item Beam search hypothesis: \num{3};
   \end{itemize}
 \end{frame}
@@ -250,17 +252,17 @@
     \scriptsize
     \begin{tabularx}{\textwidth}{|X|X|c|c|}
       \hline
-      \textbf{Email}                                                                                                                                                                                        & \textbf{Reply}                                                                                                                                                                                                                     & \textbf{AI?} & \textbf{Correct?} \\
+      \textbf{Email}                                                                                                                                                                                        & \textbf{Reply}                                                                                                                                                                                                                     & \textbf{AI?}   & \textbf{Was it AI?} \\
       \hline
-      Let me know if this works.                                                                                                                                                                            & This works great. Will let you know. as soon as I get a chance, let me know                                                                                                                                                        & \num{0}{\%}  & yes               \\
+      Let me know if this works.                                                                                                                                                                            & This works great. Will let you know. as soon as I get a chance, let me know                                                                                                                                                        & \num{100}{\%}  & yes                 \\
       \hline
-      Following are the terms under which I ran the Forward Obligation report and received this message: General SQL error. ORA-00907: missing right parenthesis. Terms: Let me know what you find. Thanks! & Kate, I ran the report with the exact same options and it came right up. Try it again, exactly as before. Usually if it works for one person and not the other it is a security issue. Let me know what happens. Thanks, Brettther & \num{0}{\%}  & yes               \\
+      Following are the terms under which I ran the Forward Obligation report and received this message: General SQL error. ORA-00907: missing right parenthesis. Terms: Let me know what you find. Thanks! & Kate, I ran the report with the exact same options and it came right up. Try it again, exactly as before. Usually if it works for one person and not the other it is a security issue. Let me know what happens. Thanks, Brettther & \num{50}{\%}   & yes                 \\
       \hline
-      Didn't you trade uranium at one time?                                                                                                                                                                 & Yeah, I know the buisness VERY well.                                                                                                                                                                                               & \num{0}{\%}  & no                \\
+      Didn't you trade uranium at one time?                                                                                                                                                                 & Yeah, I know the buisness VERY well.                                                                                                                                                                                               & \num{33.3}{\%} & no                  \\
       \hline
-      Are you free for drinks either Monday or Wednesday?                                                                                                                                                   & Yes                                                                                                                                                                                                                                & \num{0}{\%}  & no                \\
+      Are you free for drinks either Monday or Wednesday?                                                                                                                                                   & Yes                                                                                                                                                                                                                                & \num{66.7}{\%} & no                  \\
       \hline
-      Mons, I would be available on the 25th, 26th or 27th. I cannot make it the week of the 18th. Thanks, Bill.                                                                                            & OK, so, let's see if we can get together later today. I have to leave at 16:00 for a few minutes, but I am sure that I will be out at that moment. Thank you Kim.                                                                  & \num{0}{\%}  & yes               \\
+      Mons, I would be available on the 25th, 26th or 27th. I cannot make it the week of the 18th. Thanks, Bill.                                                                                            & OK, so, let's see if we can get together later today. I have to leave at 16:00 for a few minutes, but I am sure that I will be out at that moment. Thank you Kim.                                                                  & \num{16.7}{\%} & yes                 \\
       \hline
     \end{tabularx}
   \end{table}
@@ -277,6 +279,8 @@
   \begin{itemize}
     \item \href{https://github.com/claudioscheer/seq2seq-bert}{https://github.com/claudioscheer/seq2seq-bert};
     \item \href{https://github.com/claudioscheer/seq2seq-bert/releases/tag/v0.0.8-alpha}{Final release (v0.0.8)};
+    \item \href{https://www.kaggle.com/wcukierski/enron-email-dataset}{The Enron Email Dataset};
+    \item \href{https://www.kaggle.com/claudioscheer/extract-reply-emails}{Dataset parser};
   \end{itemize}
 \end{frame}
 %---------------------------------------------------------
